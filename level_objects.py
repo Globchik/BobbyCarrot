@@ -39,7 +39,11 @@ class Ground(PlainLevelObject):
 
 class Wall(PlainLevelObject):
     def __init__(self):
-        super().__init__("||", False)
+        super().__init__("██", False)
+
+class Empty(PlainLevelObject):
+    def __init__(self):
+        super().__init__("  ", False)
 
 class Carrot(PlainLevelObject):
     def __init__(self):
@@ -108,3 +112,57 @@ class ActiveFlag(PlainLevelObject):
     
     def on_enter(self, self_x, self_y, gs):
         gs.win()
+
+class Key(PlainLevelObject):
+    def __init__(self, key_name):
+        super().__init__("🗝️")
+        self.item_name = key_name
+    
+    def on_enter(self, self_x, self_y, gs):
+        gs.level.replace_at(self_x,self_y, Ground())
+        gs.level.player.items.append(self.item_name)
+        for x, row in enumerate(gs.level.level_layout):
+            for y, obj in enumerate(row):
+                if isinstance(obj, Lock):
+                    if(obj.lock_name == self.item_name):
+                        obj.unlock()
+
+class Lock(PlainLevelObject):
+    def __init__(self, lock_name):
+        super().__init__("🔒", False)
+        self.lock_name = lock_name
+    
+    def unlock(self):
+        self.is_passable = True
+    
+    def lock(self):
+        self.is_passable = False
+    
+    def on_enter(self, self_x, self_y, gs):
+        gs.level.replace_at(self_x,self_y, Ground())
+        if(gs.level.player.has_item(self.lock_name)):
+            gs.level.player.remove_item(self.lock_name)
+        
+        if(gs.level.player.has_item(self.lock_name)):
+            return
+        
+        for x, row in enumerate(gs.level.level_layout):
+            for y, obj in enumerate(row):
+                if isinstance(obj, Lock):
+                    if(obj.lock_name == self.lock_name):
+                        obj.lock()
+        
+class Spike(PlainLevelObject):
+    def __init__(self):
+        super().__init__("^^")
+    
+    def on_enter(self, self_x, self_y, gs):
+        gs.lose()
+
+class HiddenSpike(PlainLevelObject):
+    def __init__(self):
+        super().__init__("__")
+    
+    def on_enter(self, self_x, self_y, gs):
+        gs.level.replace_at(self_x,self_y, Spike())
+

@@ -28,6 +28,11 @@ class GameState:
         self.direction_moving: Direction = None
         self.is_running = True
         self.skip_input = False
+        
+        for row in self.level.level_layout:
+            for item in row:
+                if item.is_collectible:
+                    self.collectibles_left += 1
 
     def get_direction(control_action: ControlAction):
         if control_action == ControlAction.LEFT:
