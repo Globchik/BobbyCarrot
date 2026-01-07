@@ -94,8 +94,8 @@ class ConveerSwitch(PlainLevelObject):
     
     def on_enter(self, self_x, self_y, gs):
         gs.level.replace_at(self_x,self_y, Ground())
-        for x, row in enumerate(gs.level.level_layout):
-            for y, obj in enumerate(row):
+        for row in gs.level.level_layout:
+            for obj in row:
                 if isinstance(obj, Conveer):
                     obj.swap_direction()
     
@@ -121,8 +121,8 @@ class Key(PlainLevelObject):
     def on_enter(self, self_x, self_y, gs):
         gs.level.replace_at(self_x,self_y, Ground())
         gs.level.player.items.append(self.item_name)
-        for x, row in enumerate(gs.level.level_layout):
-            for y, obj in enumerate(row):
+        for row in gs.level.level_layout:
+            for obj in row:
                 if isinstance(obj, Lock):
                     if(obj.lock_name == self.item_name):
                         obj.unlock()
@@ -146,8 +146,8 @@ class Lock(PlainLevelObject):
         if(gs.level.player.has_item(self.lock_name)):
             return
         
-        for x, row in enumerate(gs.level.level_layout):
-            for y, obj in enumerate(row):
+        for row in gs.level.level_layout:
+            for obj in row:
                 if isinstance(obj, Lock):
                     if(obj.lock_name == self.lock_name):
                         obj.lock()
@@ -163,6 +163,6 @@ class HiddenSpike(PlainLevelObject):
     def __init__(self):
         super().__init__("__")
     
-    def on_enter(self, self_x, self_y, gs):
+    def on_exit(self, self_x, self_y, gs):
         gs.level.replace_at(self_x,self_y, Spike())
 
