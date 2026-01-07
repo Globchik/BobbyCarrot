@@ -47,25 +47,64 @@ class Carrot(PlainLevelObject):
         self.is_collectible = True
 
     def on_enter(self, self_x, self_y, gs):
-        gs.collectibles_left -= 1
+        gs.collectible_found()
         gs.level.replace_at(self_x, self_y, Ground())
 
 class Conveer(PlainLevelObject):
     def __init__(self, direction: Direction):
-        symb = ""
         self.direction = direction
-        if direction == Direction.LEFT:
+        super().__init__(self.get_symbol())
+    
+    def get_symbol(self):
+        symb: str
+        if self.direction == Direction.LEFT:
             symb = "⇐⇐"
-        elif direction == Direction.RIGHT:
+        elif self.direction == Direction.RIGHT:
             symb = "⇒⇒"
-        elif direction == Direction.UP:
+        elif self.direction == Direction.UP:
             symb = "⇑⇑"
-        elif direction == Direction.DOWN:
+        elif self.direction == Direction.DOWN:
             symb = "⇓⇓"
         else:
             symb = "!?"
-        super().__init__(symb)
+        return symb
+    
+    def swap_direction(self):
+        if(self.direction == Direction.LEFT):
+            self.direction = Direction.RIGHT
+        elif(self.direction == Direction.RIGHT):
+            self.direction = Direction.LEFT
+        elif(self.direction == Direction.UP):
+            self.direction = Direction.DOWN
+        elif(self.direction == Direction.DOWN):
+            self.direction = Direction.UP
+        self.display_symbol = self.get_symbol()
 
     def on_enter(self, self_x, self_y, gs):
         gs.skip_input = True
         gs.direction_moving = self.direction
+    
+class ConveerSwitch(PlainLevelObject):
+    def __init__(self):
+        super().__init__("🟡")
+    
+    def on_enter(self, self_x, self_y, gs):
+        gs.level.replace_at(self_x,self_y, Ground())
+        for x, row in enumerate(gs.level.level_layout):
+            for y, obj in enumerate(row):
+                if isinstance(obj, Conveer):
+                    obj.swap_direction()
+    
+class InactiveFlag(PlainLevelObject):
+    def __init__(self):
+        super().__init__("🚩")
+    
+    def activate(self, self_x, self_y, gs: "GameState"):
+        gs.level.replace_at(self_x,self_y,ActiveFlag())
+
+class ActiveFlag(PlainLevelObject):
+    def __init__(self):
+        super().__init__("🏁")
+    
+    def on_enter(self, self_x, self_y, gs):
+        gs.win()

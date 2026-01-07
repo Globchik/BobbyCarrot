@@ -9,6 +9,7 @@ class ControlAction(Enum):
     RIGHT = 2
     UP = 3
     DOWN = 4
+    RESTART = 5
 
 class ControlsManager:
 
@@ -33,6 +34,8 @@ class ControlsManager:
                 return ControlAction.UP
             if key == "S":
                 return ControlAction.DOWN
+            if key == "R":
+                return ControlAction.RESTART
             if key == "\x1b":
                 return ControlAction.CANCEL
             if key == "\r":
