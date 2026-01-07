@@ -21,7 +21,7 @@ class MenuManager:
                 else:
                     print(f"    {available_levels[i]}")
 
-            print("\n[UP/DOWN]: Navigate  [ENTER]: Select")
+            print("\n[UP/DOWN]: Navigate  [ENTER]: Select  [ESC]: Quit")
 
             action = ControlsManager.wait_for_control_action()
 
@@ -35,6 +35,10 @@ class MenuManager:
                     selected_index = 0
             elif action == ControlAction.CONFIRM:
                 return selected_index
+            elif action == ControlAction.CANCEL:
+                quit = MenuManager.display_quit_menu()
+                if(quit):
+                    break
 
     def display_win_menu(turns: int):
         MenuManager.clear_console()
